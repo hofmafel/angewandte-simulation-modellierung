@@ -27,16 +27,32 @@ market_price = 18  # Current put option price
 sigma = implied_volatility(S, K, T, r, market_price)
 
 # Generate a range of stock prices at expiration
-stock_prices = np.linspace(300, 700, 500)
+stock_prices = np.linspace(300, 650, 500)
 pdf = stats.norm.pdf((np.log(stock_prices / S) - (r - 0.5 * sigma**2) * T) / (sigma * np.sqrt(T)), 0, 1) / (stock_prices * sigma * np.sqrt(T))
+
+# Calculate sigma ranges
+mu = S * np.exp((r - 0.5 * sigma**2) * T)
+sigma_1 = S * sigma * np.sqrt(T)
+sigma_2 = 2 * sigma_1
+sigma_3 = 3 * sigma_1
 
 # Plot the probability distribution
 plt.figure(figsize=(10, 6))
 plt.plot(stock_prices, pdf, label=f'Probability Distribution\n(Sigma: {sigma:.2f})')
+
+# Plot sigma lines
+plt.axvline(mu + sigma_1, color='r', linestyle='--', label='1 Sigma (68.27%)')
+plt.axvline(mu - sigma_1, color='r', linestyle='--')
+plt.axvline(mu + sigma_2, color='g', linestyle='--', label='2 Sigma (95.45%)')
+plt.axvline(mu - sigma_2, color='g', linestyle='--')
+plt.axvline(mu + sigma_3, color='b', linestyle='--', label='3 Sigma (99.73%)')
+plt.axvline(mu - sigma_3, color='b', linestyle='--')
+
+# Add labels and legend
 plt.title('Probability Distribution of Stock Prices at Expiration')
 plt.xlabel('Stock Price at Expiration')
 plt.ylabel('Probability Density')
 plt.legend()
 plt.grid(True)
-#plt.show()
-plt.savefig('bsplot.png')
+plt.show()
+
